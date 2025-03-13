@@ -54,6 +54,7 @@ Assets = {
 
     Asset("ATLAS", "images/inventoryimages/bloodscythe.xml"),
     Asset("IMAGE", "images/inventoryimages/bloodscythe.tex"),
+
 }
 
 AddMinimapAtlas("images/map_icons/ragna.xml")
@@ -117,5 +118,25 @@ AddRecipe("bloodedge",
 -- 设置血镰描述(无法制作)
 STRINGS.NAMES.BLOODSCYTHE = "血镰"
 STRINGS.CHARACTERS.GENERIC.DESCRIBE.BLOODSCYTHE = "这把镰刀散发着不祥的气息..."
+
+-- 添加血魂值UI
+AddClassPostConstruct("widgets/statusdisplays", function(self)
+    if self.owner and self.owner.prefab == "ragna" then
+        self.bloodsoul = self:AddChild(require("widgets/bloodsoulbadge")(self.owner))
+        self.bloodsoul:SetPosition(-120, 40, 0)
+        
+        self.inst:ListenForEvent("bloodsouldelta", function(owner, data)
+            if self.bloodsoul then
+                self.bloodsoul:SetPercent(data.newpercent)
+            end
+        end, self.owner)
+    end
+end)
+
+AddComponentPostInit("health", function(self, inst)
+    if inst:HasTag("player") and inst.prefab == "ragna" then
+        inst:AddComponent("bloodsoul")
+    end
+end)
 
 

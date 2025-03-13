@@ -9,6 +9,9 @@ local assets = {
 TUNING.RAGNA_HEALTH = 200
 TUNING.RAGNA_HUNGER = 150
 TUNING.RAGNA_SANITY = 120
+TUNING.RAGNA_BLOODSOUL_MAX = 100
+TUNING.RAGNA_BLOODSOUL_COST = 10
+TUNING.RAGNA_TRANSFORM_DURATION = 300 -- 5分钟 = 300秒
 
 -- 初始物品
 TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.RAGNA = {
@@ -39,6 +42,9 @@ local function onload(inst)
     else
         onbecamehuman(inst)
     end
+
+    inst.components.bloodsoul:SetMax(TUNING.RAGNA_BLOODSOUL_MAX)
+    inst.components.bloodsoul:SetCurrent(TUNING.RAGNA_BLOODSOUL_MAX)
 end
 
 -- 客户端初始化
@@ -49,6 +55,10 @@ local function common_postinit(inst)
     inst:AddTag("ragna")
     inst:AddTag("bloodedge")
     inst:AddTag("azuregrimoire")
+
+    if TheWorld.ismastersim then
+        inst:AddComponent("bloodsoul")
+    end
 end
 
 -- 服务端初始化
@@ -75,6 +85,11 @@ local function master_postinit(inst)
             inst.components.health:DoDelta(5)
         end
     end)
+    
+    -- 添加血魂组件
+    inst:AddComponent("bloodsoul")
+    inst.components.bloodsoul:SetMax(TUNING.RAGNA_BLOODSOUL_MAX)
+    inst.components.bloodsoul:SetCurrent(TUNING.RAGNA_BLOODSOUL_MAX)
     
     inst.OnLoad = onload
     inst.OnNewSpawn = onload
